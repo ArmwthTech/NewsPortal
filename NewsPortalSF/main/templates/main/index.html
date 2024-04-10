@@ -3,9 +3,9 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-    <div class="feature">
-        <h1>{{ title }}</h1>
-        <p>!FFF!</p>
-        <button class="btn btn-warning">На главную</button>
-    </div>
+<div class="feature">
+    <h1>{{ title }}</h1>
+    <p>Читайте самые свежии новости</p>
+    <a href="{% url 'news_home' %}"> <button class="btn btn-info">К новостям</button></a>
+</div>
 {% endblock %}

@@ -1,10 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>NEWS HOME</title>
-</head>
-<body>
+{% extends 'main/default.html' %}
+{% load custom_filters %}
+{% block title %}Новости{% endblock %}
 
-</body>
-</html>
+{% block content %}
+<div class="feature">
+    <h1>Новости</h1>
+    <p>Читайте самые свежие новости</p>
+    {% if posts %}
+        {% for el in posts %}
+        <div class="alert alert-warning">
+            <h3>{{ el.title|censor }} </h3>
+            <p><small>Published on {{ el.created_at }}</small></p>
+            <p>{{ el.text|truncatechars:20|censor }}</p>
+            <a href="{% url 'news_detail' el.id %}" class="btn btn-warning">Читать детальнее</a>
+        </div>
+        {% endfor%}
+    {% else %}
+        <p>У вас нет записей!</p>
+    {% endif %}
+    <a href="{% url 'index' %}">
+        <button class="btn btn-info">Домой</button>
+    </a>
+</div>
+{% endblock %}

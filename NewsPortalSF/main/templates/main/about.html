@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'main/default.html' %}
 
-</body>
-</html>
+{% block title %}О нас{% endblock %}
+
+{% block content %}
+<div class="feature">
+    <h1>Контактная информация</h1>
+    <p>Разработчик: ArmWthTech</p>
+    <a href="{% url 'news_home' %}"> <button class="btn btn-info">К новостям</button></a>
+</div>
+{% endblock %}
