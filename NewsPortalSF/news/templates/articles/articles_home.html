@@ -1,25 +1,24 @@
 {% extends 'main/default.html' %}
 {% load custom_filters %}
-
-{% block title %}Новости{% endblock title %}
+{% block title %}Статьи{% endblock %}
 
 {% block content %}
 <div class="feature">
-    <h1>Новости</h1>
-    <p>Читайте самые свежие новости</p>
-    <a href="{% url 'news_search'%}" class="btn btn-info">Найти</a>
-    <a href="{% url 'news_create'%}" class="btn btn-info">Создать</a>
-    {% if posts %}
-    {% for el in posts %}
-    <div class="alert alert-warning">
-        <h3>{{ el.title|censor }} </h3>
-        <p><small>Published on {{ el.created_at }}</small></p>
-        <p>{{ el.text|truncatechars:20|censor }}</p>
-        <a href="{% url 'news_detail' el.id %}" class="btn btn-warning">Читать детальнее</a>
-    </div>
-    {% endfor%}
+    <h1>Статьи</h1>
+    <p>Читайте самые свежие статьи наших ОБИТАТЕЛЕЙ</p>
+    <a href="{% url 'articles_search'%}" class="btn btn-info">Найти</a>
+    <a href="{% url 'articles_create'%}" class="btn btn-info">Создать</a>
+    {% if articles %}
+        {% for el in articles %}
+        <div class="alert alert-warning">
+            <h3>{{ el.title|censor }} </h3>
+            <p><small>Published on {{ el.created_at }}</small></p>
+            <p>{{ el.text|truncatechars:20|censor }}</p>
+            <a href="{% url 'articles_detail' el.id %}" class="btn btn-warning">Читать детальнее</a>
+        </div>
+        {% endfor%}
     {% else %}
-    <p>У вас нет записей!</p>
+        <p>У вас нет записей!</p>
     {% endif %}
     <div class="pagination">
         <span class="step-links">
@@ -43,4 +42,4 @@
         <button class="btn btn-info">Домой</button>
     </a>
 </div>
-{% endblock content%}
+{% endblock %}

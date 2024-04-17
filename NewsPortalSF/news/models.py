@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.urls import reverse
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -13,9 +13,15 @@ class Author(models.Model):
         self.rating = postRat + commRat + postCommRat
         self.save()
 
+    def __str__(self):
+        return self.user.username
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Post(models.Model):
@@ -35,12 +41,18 @@ class Post(models.Model):
         self.rating += 1
         self.save()
 
+    def __str__(self):
+        return self.title
+
     def dislike(self):
         self.rating -= 1
         self.save()
 
     def preview(self):
         return self.text[:124] + '...' if len(self.text) > 124 else self.text
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):

@@ -1,0 +1,14 @@
+{% extends 'main/default.html' %}
+
+{% block content %}
+<h2>Изменить запись</h2>
+<form method="POST" action="">
+    {% csrf_token %}
+    <h1>Заголовок</h1>
+    {{ form.title }}<br>
+    <h2>Текст</h2>
+    {{ form.text }}<br>
+    {{ form.created_at }}<br>
+    <input type="submit" value="Save" />
+</form>
+{% endblock %}

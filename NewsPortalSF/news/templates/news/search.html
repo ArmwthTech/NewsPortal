@@ -1,0 +1,51 @@
+{% extends 'main/default.html' %}
+{% load custom_filters %}
+{% block title %}
+Поиск по новостям
+{% endblock title %}
+
+{% block content %}
+<div class="feature">
+    <h1>Результаты поиска</h1>
+
+    <form action="" method="get">
+        {{ filterset.form.as_p }}
+        <input type="submit" value="Найти"/>
+    </form>
+
+    {% if search_results %}
+    <table>
+        <tr>
+            <td>Заголовок</td>
+            <td>Автор</td>
+            <td>Время</td>
+        </tr>
+        {% for post in search_results %}
+        <tr>
+            <td>{{ post.title|censor }}</td>
+            <td>{{ post.author }}</td>
+            <td>{{ post.created_at|date:'d M Y' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <h2>Постов нет!</h2>
+    {% endif %}
+    {% if page_obj.has_previous %}
+    <a href="?{% url_replace page=1 %}">1</a>
+    {% if page_obj.previous_page_number != 1 %}
+    ...
+    <a href="??{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+    {% endif %}
+    {% endif %}
+
+    {{ page_obj.number }}
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+    {% if paginator.num_pages != page_obj.next_page_number %}
+    ...
+    <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+    {% endif %}
+    {% endif %}
+    {% endblock content %}

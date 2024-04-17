@@ -1,0 +1,16 @@
+{% extends 'main/default.html' %}
+{% load custom_filters %}
+{% block title %}
+{{ articles_detail.title }}
+{% endblock %}
+
+{% block content %}
+<div class="feature">
+    <h1>{{ articles_detail.title|censor }}</h1>
+    <p>{{ articles_detail.created_at|date:"d.m.Y" }}</p>
+    <p>{{ articles_detail.text|censor }}</p>
+    <a href="{% url 'article_delete' articles_detail.id %}" class="btn btn-danger">Удалить статью</a>
+    <a href="{% url 'article_edit' articles_detail.id %}" class="btn btn-info">Обновить статью</a>
+</div>
+{% endblock %}
+

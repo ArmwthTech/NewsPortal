@@ -1,0 +1,13 @@
+{% extends 'main/default.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<div class='feature'>
+    <h1>Редактировать статью</h1>
+    <form method='POST'>
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class='btn btn-info' type='submit'>Обновить</button>
+    </form>
+</div>
+{% endblock %}
