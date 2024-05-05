@@ -4,9 +4,12 @@ from .models import Post
 from django.views.generic import DetailView, CreateView, UpdateView, DeleteView, ListView
 from django.core.paginator import Paginator
 from django.db.models import Q
-#from .filtres import NewsFilter
+# from .filtres import NewsFilter
 from .filtres import NewsArticFilter
 from .forms import NewsForm, ArticleForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
+from django.utils.decorators import method_decorator
 
 
 class PostListView(ListView):
@@ -71,13 +74,13 @@ class ArticlesDetailView(DetailView):
 # Изменения в представлениях, связанных с записями:
 
 
-class NewsArticleCreateView(CreateView):
+class NewsArticleCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'news/post_create.html'  # или 'articles/article_create.html'
     fields = '__all__'  # или список полей, которые вы хотите включить
 
 
-class NewsCreateView(CreateView):
+class NewsCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = NewsForm
     template_name = 'news/post_create.html'
@@ -88,7 +91,7 @@ class NewsCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ArticleCreateView(CreateView):
+class ArticleCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = ArticleForm
     template_name = 'news/post_create.html'
@@ -99,7 +102,7 @@ class ArticleCreateView(CreateView):
         return super().form_valid(form)
 
 
-class NewsArticleUpdateView(UpdateView):
+class NewsArticleUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     template_name = 'news/post_update.html'  # или 'articles/article_update.html'
     fields = '__all__'
@@ -112,7 +115,7 @@ class NewsArticleUpdateView(UpdateView):
             return reverse_lazy('articles_home')
 
 
-class NewsArticleDeleteView(DeleteView):
+class NewsArticleDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
     template_name = 'news/post_delete.html'
     success_url = reverse_lazy('news_home')
