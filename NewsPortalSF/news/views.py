@@ -1,13 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
-from .models import Post
+from django.contrib.auth.decorators import login_required
+from .models import Post, Category, Subscription
 from django.views.generic import DetailView, CreateView, UpdateView, DeleteView, ListView
 from django.core.paginator import Paginator
 from django.db.models import Q
 # from .filtres import NewsFilter
 from .filtres import NewsArticFilter
-from .forms import NewsForm, ArticleForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import NewsForm, ArticleForm, SubscriptionForm
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 
@@ -74,13 +75,13 @@ class ArticlesDetailView(DetailView):
 # Изменения в представлениях, связанных с записями:
 
 
-class NewsArticleCreateView(LoginRequiredMixin, CreateView):
+class NewsArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Post
     template_name = 'news/post_create.html'  # или 'articles/article_create.html'
     fields = '__all__'  # или список полей, которые вы хотите включить
 
 
-class NewsCreateView(LoginRequiredMixin, CreateView):
+class NewsCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Post
     form_class = NewsForm
     template_name = 'news/post_create.html'
@@ -91,7 +92,7 @@ class NewsCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ArticleCreateView(LoginRequiredMixin, CreateView):
+class ArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Post
     form_class = ArticleForm
     template_name = 'news/post_create.html'
@@ -102,7 +103,7 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class NewsArticleUpdateView(LoginRequiredMixin, UpdateView):
+class NewsArticleUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Post
     template_name = 'news/post_update.html'  # или 'articles/article_update.html'
     fields = '__all__'
@@ -115,7 +116,7 @@ class NewsArticleUpdateView(LoginRequiredMixin, UpdateView):
             return reverse_lazy('articles_home')
 
 
-class NewsArticleDeleteView(LoginRequiredMixin, DeleteView):
+class NewsArticleDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Post
     template_name = 'news/post_delete.html'
     success_url = reverse_lazy('news_home')
@@ -162,3 +163,45 @@ class NewsArticleSearchView(ListView):
         # Добавляем в контекст объект фильтрации.
         context['filterset'] = self.filterset
         return context
+
+
+class CategoryListView(ListView):
+    model = Post
+    template_name = 'news/category_list.html'
+    context_object_name = 'category_news_list'
+
+    def get_queryset(self):
+        self.category = get_object_or_404(Category, pk=self.kwargs['pk'])
+        queryset = Post.objects.filter(category=self.category).order_by('-date')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_subscriber'] = self.request.user not in self.category.subscribers.all()
+        context['category'] = self.category
+        return context
+
+
+# def subscribe(request, pk):
+#     user = request.user
+#     category = Category.objects.get(id=pk)
+#     category.subscribers.add(user)
+#     messages=[f'Вы подписаны на категорию {category.name}']
+#     return render(request, 'news/subscribe.html', {'messages': messages})
+
+@login_required
+def subscribe(request):
+    if request.method == 'POST':
+        form = SubscriptionForm(request.POST)
+        if form.is_valid():
+            subscription = form.save(commit=False)
+            subscription.user = request.user
+            subscription.save()
+            return redirect('subscription_success')
+    else:
+        form = SubscriptionForm()
+    return render(request, 'news/subscribe.html', {'form': form})
+
+@login_required
+def subscription_success(request):
+    return render(request, 'news/subscription_success.html')

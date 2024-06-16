@@ -19,4 +19,6 @@ urlpatterns = [
                   path('articles/<int:pk>/delete/', NewsArticleDeleteView.as_view(), name='article_delete'),
                   path('news/<int:pk>/', PostDetailView.as_view(), name='news_detail'),
                   path('articles/<int:pk>/', ArticlesDetailView.as_view(), name='articles_detail'),
+                  path('categories/<int:pk>/', CategoryListView.as_view(), name='category_list'),
+                  path('categories/<int:pk>/subscribe/', subscribe, name='subscribe'),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

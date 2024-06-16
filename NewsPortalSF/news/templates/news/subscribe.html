@@ -1,0 +1,10 @@
+{% extends 'main/default.html' %}
+
+{% block content %}
+  <h1>Subscribe to a Category</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Subscribe</button>
+  </form>
+{% endblock %}

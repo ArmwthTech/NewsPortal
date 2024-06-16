@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.mail import send_mail
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -19,6 +22,7 @@ class Author(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    subscribers = models.ManyToManyField(User,related_name='categories',verbose_name='Подписчики')
 
     def __str__(self):
         return self.name
@@ -74,3 +78,22 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+@receiver(post_save, sender=Post)
+def send_new_article_notification(sender, instance, created, **kwargs):
+    if created:
+        subscriptions = Subscription.objects.filter(category=instance.category)
+        for subscription in subscriptions:
+            send_mail(
+                'New Article in {}'.format(instance.category.name),
+                'A new article "{}" has been added. Read it here: {}'.format(instance.title, instance.get_absolute_url()),
+                'from@example.com',
+                [subscription.user.email],
+                fail_silently=False,
+            )

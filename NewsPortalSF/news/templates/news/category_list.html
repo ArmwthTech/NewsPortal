@@ -9,21 +9,16 @@
     <p>Читайте самые свежие новости</p>
     <a href="{% url 'news_search'%}" class="btn btn-info">Найти</a>
     <a href="{% url 'news_create'%}" class="btn btn-info">Создать</a>
-    {% if posts %}
-    {% for el in posts %}
+    {% if is_not_subscribers %}
+        <p class="text-center"><a href="{% url 'subscribe' category.id %}" class="btn btn-secondary btn-sm">Подписаться</a> </p>
+    {% endif %}
+
+    {% for el in category_news_list %}
     <div class="alert alert-warning">
-        <h3>{{ el.title|censor }} </h3>
-        <p><small>Published on {{ el.created_at }}</small></p>
-        {% for category in el.categories.all %}
-                <a href="{% url 'category_list' category.id %}">Category: {{category}} </a>
-        {% endfor %}
-        <p>{{ el.text|truncatechars:20|censor }}</p>
-        <a href="{% url 'news_detail' el.id %}" class="btn btn-warning">Читать детальнее</a>
+        <a href="{% url 'category_list' el.id %}" class="btn btn-warning">{{ category }}</a>
     </div>
     {% endfor%}
-    {% else %}
-    <p>У вас нет записей!</p>
-    {% endif %}
+
     <div class="pagination">
         <span class="step-links">
             {% if page_obj.has_previous %}

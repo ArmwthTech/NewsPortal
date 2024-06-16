@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from .models import Post
+from .models import Post, Subscription
 
 
 class NewsForm(forms.ModelForm):
@@ -27,3 +27,9 @@ class ArticleForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+class SubscriptionForm(forms.ModelForm):
+    class Meta:
+        model = Subscription
+        fields = ['category']
