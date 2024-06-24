@@ -11,7 +11,7 @@ from .forms import NewsForm, ArticleForm, SubscriptionForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
-
+from .tasks import send_notification  #
 
 class PostListView(ListView):
     model = Post
@@ -86,10 +86,16 @@ class NewsCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = NewsForm
     template_name = 'news/post_create.html'
     success_url = reverse_lazy('news_home')
+    permission_required = ('news.add_post',)
 
     def form_valid(self, form):
         form.instance.type = 'N'  # Устанавливаем значение поля
-        return super().form_valid(form)
+        response = super().form_valid(form)
+
+        # Вызываем задачу отправки уведомления
+        send_notification.delay(self.object.id)
+
+        return response
 
 
 class ArticleCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
